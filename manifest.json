@@ -21,6 +21,10 @@
     "alarms",
     "<all_urls>"
   ],
+  "optional_permissions": [
+    "idle",
+    "alarms"
+  ],
   "background": {
     "scripts": [
       "js/messaging.js",
@@ -39,7 +43,9 @@
       "background/refresh-all-tabs.js",
       "background/openusercss-api.js",
       "vendor/semver-bundle/semver.js",
-      "vendor-overwrites/colorpicker/colorconverter.js"
+      "vendor-overwrites/colorpicker/colorconverter.js",
+      "schedule/core.js",
+      "schedule/ui.js"
     ]
   },
   "commands": {

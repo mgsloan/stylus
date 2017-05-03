@@ -308,6 +308,7 @@ function recreateStyleTargets({styles, iconsOnly = false} = {}) {
     if (newUI.enabled && newUI.favicons) {
       debounce(getFaviconImgSrc);
     }
+    document.dispatchEvent(new Event('styles-ready'));
   });
 }
 
@@ -560,6 +561,9 @@ function handleUpdate(style, {reason, method} = {}) {
   if (newUI.enabled && newUI.favicons) {
     getFaviconImgSrc(entry);
   }
+  document.dispatchEvent(new CustomEvent('style-edited', {
+    detail: style
+  }));
 
   function handleToggledOrCodeOnly() {
     const newStyleMeta = getStyleWithNoCode(style);
