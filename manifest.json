@@ -38,6 +38,8 @@
       "background/update.js",
       "background/refresh-all-tabs.js",
       "background/openusercss-api.js",
+      "background/sun.js",
+      "background/night-mode.js",
       "vendor/semver-bundle/semver.js",
       "vendor-overwrites/colorpicker/colorconverter.js"
     ]
