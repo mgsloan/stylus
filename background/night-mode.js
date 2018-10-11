@@ -16,13 +16,26 @@ function mySunset(day) {
   return day.sunset(MY_LATITUDE, MY_LONGITUDE);
 }
 
+function setDay(date, day) {
+  date.setMonth(day.getMonth());
+  date.setDate(day.getDate());
+}
+
 function handleTimer() {
   var now = new Date();
   var tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+  var sunriseToday = mySunrise(now);
+  var sunsetToday = mySunset(now);
+  var sunriseTomorrow = mySunrise(tomorrow);
+  // sun.js varies from my expectations for which date is used, so
+  // just using it for times, and setting the dates of each result.
+  setDay(sunriseToday, now);
+  setDay(sunsetToday, now);
+  setDay(sunriseTomorrow, tomorrow);
   var events = [
-    { time: mySunrise(now), type: "sunrise" },
-    { time: mySunset(now), type: "sunset" },
-    { time: mySunrise(tomorrow), type: "sunrise" },
+    { time: sunriseToday, type: "sunrise" },
+    { time: sunsetToday, type: "sunset" },
+    { time: sunriseTomorrow, type: "sunrise" },
   ];
   var nextEvent = null;
   for (var i = 0; i < events.length; i++) {
