@@ -7,6 +7,7 @@
 
 const MY_LATITUDE = 47;
 const MY_LONGITUDE = -120;
+const CHECK_INTERVAL = 1000 * 60 * 5;
 
 function mySunrise(day) {
   return day.sunrise(MY_LATITUDE, MY_LONGITUDE);
@@ -21,7 +22,24 @@ function setDay(date, day) {
   date.setDate(day.getDate());
 }
 
-function handleTimer() {
+var last_set_mode = null;
+
+function setMode(mode) {
+  if (mode !== last_set_mode) {
+    if (mode === "sunrise") {
+      console.info("Now nighttime, so night-mode is enabling Stylus.");
+      browserCommands.styleDisableAll({ checked: false });
+    } else if (mode === "sunset") {
+      console.info("Now daytime, so night-mode is disabling Stylus.");
+      browserCommands.styleDisableAll({ checked: true });
+    } else {
+      throw "Invariant violated: expected sunrise or sunset event";
+    }
+    last_set_mode = mode;
+  }
+}
+
+function updateNightMode() {
   var now = new Date();
   var tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
   var sunriseToday = mySunrise(now);
@@ -48,19 +66,18 @@ function handleTimer() {
   if (!nextEvent) {
     throw "Invariant violated: couldn't find next sunrise / sunset event";
   }
-  if (nextEvent.type === "sunrise") {
-    console.info("Currently nighttime, so night-mode is enabling Stylus.");
-    browserCommands.styleDisableAll({ checked: false });
-  } else if (nextEvent.type === "sunset") {
-    console.info("Currently daytime, so night-mode is disabling Stylus.");
-    browserCommands.styleDisableAll({ checked: true });
-  } else {
-    throw "Invariant violated: expected sunrise or sunset event";
-  }
   var nextEventMillis = nextEvent.time - now;
   var nextEventHours = nextEventMillis / (60 * 60 * 1000);
   console.info("Next stylus night-mode event is", nextEvent.type, "in", nextEventHours, "hours");
-  setTimeout(handleTimer, nextEventMillis);
+  // If the transition happens before the next interval, schedule a
+  // more precise timer.
+  if (nextEventMillis < CHECK_INTERVAL) {
+    setTimeout(updateNightMode, nextEventMillis + 1000);
+  }
 }
 
-setTimeout(handleTimer, 100);
+// Ideally, we'd only schedule timers for the actual transitions.
+// However, this doesn't work properly with laptop suspend. So
+// instead, register an interval timer to periodically check.
+setTimeout(updateNightMode, 100);
+setInterval(updateNightMode, CHECK_INTERVAL);
