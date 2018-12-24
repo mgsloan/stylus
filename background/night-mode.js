@@ -68,7 +68,7 @@ function updateNightMode() {
   }
   var nextEventMillis = nextEvent.time - now;
   var nextEventHours = nextEventMillis / (60 * 60 * 1000);
-  console.info("Next stylus night-mode event is", nextEvent.type, "in", nextEventHours, "hours");
+  console.info("Next stylus night-mode event is", nextEvent.type, "in", nextEventHours, "hours (current time is", now, ").");
   // If the transition happens before the next interval, schedule a
   // more precise timer.
   if (nextEventMillis < CHECK_INTERVAL) {
